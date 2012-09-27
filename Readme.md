@@ -37,6 +37,14 @@ Other options:
   * `username` To authenticate your db connection
   * `password` To authenticate your db connection
 
+## callback
+
+Optional param of type function that is called after the dataStore has been established.
+
+## afterReap
+
+Optional param of type function that is called passing the returned sid (sessionids) that have been removed during the reap.
+
 ## Example
 
 You have a complete example on `example/index.js`.
@@ -57,6 +65,26 @@ You have a complete example on `example/index.js`.
       , store: new mongoStore({db: db})
       })
     );
+
+## Example with callback and afterReap
+
+	 var connect = require('connect')
+      , Db = require('mongodb').Db
+      , Server = require('mongodb').Server
+      , server_config = new Server('localhost', 27017, {auto_reconnect: true, native_parser: true})
+      , db = new Db('test', server_config, {})
+      , mongoStore = require('connect-mongodb');
+
+    connect.createServer(
+      connect.bodyParser(),
+      connect.cookieParser(),
+      connect.session({
+        cookie: {maxAge: 60000 * 1} // 1 minute(s)
+      , secret: 'foo'
+      , store: new mongoStore({db: db}, function(){console.log('All set up');},function(sid){console.log('# of return values of reap = ', sid.length);})
+  	  })
+    );
+
 
 ## Tests
 
